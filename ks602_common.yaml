@@ -1,0 +1,40 @@
+esphome:
+  name: $devicename
+  platform: ESP8266
+  board: esp01_1m
+  #esp8266_restore_from_flash: yes
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_pw
+  domain: .jonn26.lan
+
+# Enable logging
+logger:
+  #level: VERBOSE
+
+# Enable Home Assistant API
+api:
+  password: !secret esphome_rest_pw
+
+ota:
+  password: !secret esphome_ota_pw
+
+switch:
+  - platform: restart
+    name: $upper_devicename Restart
+
+status_led:
+    pin:
+      number: GPIO13
+      inverted: True
+
+output:
+  - platform: gpio
+    id: relay
+    pin: GPIO12
+
+sensor:
+  - platform: uptime
+    name: $upper_devicename Uptime
+

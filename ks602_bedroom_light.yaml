@@ -1,0 +1,43 @@
+substitutions:
+  devicename: bedroom_light
+  upper_devicename: Bedroom Light
+
+binary_sensor:
+  - platform: status
+    name: $upper_devicename Status
+  - platform: template
+    name: $upper_devicename Long Press
+    id: long_press
+  - platform: gpio
+    pin:
+      number: GPIO0
+      inverted: true
+    id: button
+
+    on_multi_click:
+    - timing:
+        - ON for at most .69s
+      then:
+        - logger.log: "Single Short Press"
+        - light.toggle: light1
+    - timing:
+        - ON for at least 0.7s
+      then:
+        - logger.log: "Single Long Press"
+        - binary_sensor.template.publish:
+            id: long_press
+            state: !lambda 'return true;'
+        - delay: 500ms
+        - binary_sensor.template.publish:
+            id: long_press
+            state: !lambda 'return false;'
+
+
+
+light:
+  - platform: binary
+    output: relay
+    name: $upper_devicename
+    id: light1
+
+<<: !include ks602_common.yaml
